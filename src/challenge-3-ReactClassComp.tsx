@@ -14,10 +14,12 @@ interface IState {
   filterQuery: string;
 }
 
+interface IProps {}
+
 class ClassComp extends Component<{}, IState> {
   private filterInput: RefObject<HTMLInputElement>;
 
-  constructor(props: any) {
+  constructor(props: IProps) {
     super(props);
     this.filterInput = createRef();
     this.state = {
@@ -135,7 +137,11 @@ class ClassComp extends Component<{}, IState> {
             ))}
           </tbody>
         </table>
-        {loading && <div className="loader">Loading...</div>}
+        {loading && (
+          <div className="loader-container">
+            <div className="loader" />
+          </div>
+        )}
       </div>
     );
   }

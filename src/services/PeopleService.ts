@@ -2,13 +2,18 @@ import { IPeople, IPerson } from "../types/peopleTypes";
 
 const baseUrl = "https://swapi.dev/api/people";
 
-export const fetchPeopleByPage = async (pageNumber: number) => {
+export const fetchPeopleByPage = async (
+  pageNumber: number
+): Promise<IPeople> => {
   const queryParams = new URLSearchParams(`page=${pageNumber}`);
   const response = await fetch(`${baseUrl}?${queryParams}`);
   return await response.json();
 };
 
-export const fetchPeopleInBatches = async (data: IPeople, batchSize = 5) => {
+export const fetchPeopleInBatches = async (
+  data: IPeople,
+  batchSize = 5
+): Promise<IPerson[]> => {
   let responses: IPeople[] = [];
   const totalPages = Math.ceil(data?.count / data?.results?.length);
   const pagesBatch: number[] = [];
@@ -28,7 +33,8 @@ export const fetchPeopleInBatches = async (data: IPeople, batchSize = 5) => {
   }
   let totalRecords: IPerson[] = [];
   responses.forEach((res) => {
-    totalRecords = [...totalRecords, ...res.results];
+    const { results = [] } = res || {};
+    totalRecords = [...totalRecords, ...results];
   });
   return totalRecords;
 };

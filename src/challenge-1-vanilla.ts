@@ -6,9 +6,11 @@ import {
 } from "./services/PeopleService";
 import { IPerson } from "./types/peopleTypes";
 import { calculatePower, debounce } from "./utils";
+import { ChangeEvent } from "react";
 
 interface IState {
   peopleList: IPerson[];
+  multiplier: string;
 }
 
 const onMultiplierChange = (value: string) => {
@@ -23,7 +25,7 @@ const onMultiplierChange = (value: string) => {
   }
 };
 
-const populateTableRows = (data: IPerson[]) => {
+const populateTableRows = (data: IPerson[], multiplier = "10") => {
   const tableBody = document.getElementById("tbody");
   if (tableBody) {
     tableBody.innerHTML = "";
@@ -38,7 +40,7 @@ const populateTableRows = (data: IPerson[]) => {
       const key = properties[j];
       const cellNodeValue =
         key === "power"
-          ? calculatePower("10", person.mass, person.height)
+          ? calculatePower(multiplier, person.mass, person.height)
           : person[key];
       const cellText = document.createTextNode(cellNodeValue);
       cell.appendChild(cellText);
@@ -59,6 +61,7 @@ const setLoading = (isLoading: boolean) => {
 export const VanillaApp = (() => {
   const state: IState = {
     peopleList: [],
+    multiplier: "10",
   };
   const initialize = async () => {
     setLoading(true);
@@ -67,9 +70,11 @@ export const VanillaApp = (() => {
     state.peopleList = data.results;
 
     const multiplierInput = document.getElementById("multiplier");
-    multiplierInput?.addEventListener("change", (e) =>
-      onMultiplierChange(e?.target?.value)
-    );
+    multiplierInput?.addEventListener("change", (e) => {
+      const val = (e?.target as HTMLInputElement).value;
+      onMultiplierChange(val);
+      state.multiplier = val;
+    });
 
     const filterInput = document.getElementById("filter");
     filterInput?.addEventListener("keyup", debounce(onFilterChange));
@@ -83,12 +88,12 @@ export const VanillaApp = (() => {
     setLoading(false);
   };
 
-  const onFilterChange = (e: any) => {
+  const onFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     const filteredPeople = state.peopleList.filter((p) =>
       p.name.toLowerCase().includes(query.toLowerCase())
     );
-    populateTableRows(filteredPeople);
+    populateTableRows(filteredPeople, state.multiplier);
   };
 
   const onKeyPress = (e: KeyboardEvent) => {
