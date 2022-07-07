@@ -57,6 +57,14 @@ table th {
   padding: 0.25rem;
 }
 
+table th {
+  background-color: #2a2e43;
+  color: white;
+}
+
+tr:nth-child(even){background-color: #f2f2f2;}
+tr:hover {background-color: #ddd;}
+
 .loader-container {
   display: flex;
   justify-content: center;
